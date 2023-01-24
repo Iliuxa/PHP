@@ -10,94 +10,68 @@
 </html>
 
 <?php
- $dbconn =  pg_connect("host=localhost dbname=postgres user=postgres password=root")
- or die('Не удалось соединиться: ' . pg_last_error());
 
-$query = 'select count(id_benefits)  from benefits  ';
-$result = pg_query($dbconn, $query) or die('Ошибка запроса: ' . pg_last_error());
-$count_benefits = pg_fetch_array($result, null, PGSQL_NUM);
-$count_benefits++;
-$benefits = ["id_benefits" => $count_benefits, "id_title" => 0, "id_category" => 0, "id_group" => 0];
+$requests = ['select * from title', 'select * from category', 'select * from group_'];
+$requestsOut = ['insert into title values ( :id, :name, :fname)', 'insert into category values ( :id, :name)', 'insert into group_ values ( :id, :name)'] ;
 
-  $title = [ "full_name" => $_POST['full_name'], "short_name" => $_POST['short_name'] ];
-  $query = 'select count(full_name)  from title';
-  $result = pg_query($dbconn, $query) or die('Ошибка запроса: ' . pg_last_error());
-  $count_str = pg_fetch_array($result, null, PGSQL_NUM);
-  $query = 'select full_name from title';
-  $result = pg_query($dbconn, $query) or die('Ошибка запроса: ' . pg_last_error());
 
-  for ($i = 0; $i < $count_str; $i++){
-      if($title["full_name"] == pg_fetch_array($result, $i, PGSQL_NUM)[0]){
-          $benefits["id_title"] = $i + 1;
-          goto a;
-      }
-  }
-  $title_new = ["id_title" => $count_str +1];
-  array_unshift($title, $title_new );
-$title = [ "full_name" => $_POST['full_name'], "short_name" => $_POST['short_name'] ];
-$query = 'INSERT INTO title ';
-  $benefits["id_title"] = $count_str +1;
-a:
-echo "xxxxx";
-$category = [ "category_name" => $_POST['category_name'] ];
-$query = 'select count(category_name)  from category  ';
-$result = pg_query($dbconn, $query) or die('Ошибка запроса: ' . pg_last_error());
-$count_str = pg_fetch_array($result, null, PGSQL_NUM);
-$query = 'select category_name from category';
-$result = pg_query($dbconn, $query) or die('Ошибка запроса: ' . pg_last_error());
-for ($i = 0; $i < $count_str; $i++){
-    if($category["category_name"] == pg_fetch_array($result, $i, PGSQL_NUM)[0]){
-        $benefits["id_category"] = $i + 1;
-        goto b;
+$title = [ $_POST['full_name'],$_POST['short_name'] ];
+$category = [ $_POST['category_name'] ];
+$group = [ $_POST['group_name'] ];
+
+$inp = [ $title, $category, $group];
+$z = 1;
+foreach ($inp as $x){
+    if($x[0] == ''){
+        $z = 0;
+        echo "Заполните все поля!";
+        break;
     }
 }
-$category_new = ["id_category" => $count_str +1];
-array_unshift($category, $category_new );
-$xx = pg_insert($dbconn, 'category', $category);
-if ($xx) {
-    echo "2\n";
-} else {
-    echo "0\n";
-}
-$benefits["id_category"] = $count_str +1;
-b:
+if($z == 1) {
+    try {
+        $dbh = new PDO('pgsql:host=localhost; dbname=postgres', "postgres", "root", [
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+        ]);
+        $benefits_count_x = ($dbh->query('select count(id_benefits)  from benefits ')->fetchAll(PDO::FETCH_NUM))[0];
+        $benefits_count = $benefits_count_x[0] + 1;
+        $outB = [$benefits_count];
+        for ($i = 0; $i < 3; $i++) {
+            $counter = 0;
+            $id = 1;
+            foreach ($dbh->query($requests[$i])->fetchAll(PDO::FETCH_NUM) as $row) {
+                if ($row[1] == $inp[$i][0]) {
+                    array_push($outB, $row[0]);
+                    $counter = 1;
+                    break;
+                }
+                $id++;
+            }
 
-$group = [ "group_name" => $_POST['group_name'] ];
-$query = 'select count(group_name)  from group_';
-$result = pg_query($dbconn, $query) or die('Ошибка запроса: ' . pg_last_error());
-$count_str = pg_fetch_array($result, null, PGSQL_NUM);
-$query = 'select group_name from group';
-$result = pg_query($dbconn, $query) or die('Ошибка запроса: ' . pg_last_error());
-for ($i = 0; $i < $count_str; $i++){
-    if($group["group_name"] == pg_fetch_array($result, $i, PGSQL_NUM)[0]){
-        $benefits["id_group"] = $i + 1;
-        goto c;
+            if ($counter == 0) {
+                array_push($outB, $id);
+                $query = $dbh->prepare($requestsOut[$i]);
+                $query->bindParam(':id', $id, PDO::PARAM_INT);
+                $query->bindParam(':name', $inp[$i][0], PDO::PARAM_STR);
+                if ($i == 0) { $query->bindParam(':fname', $title[1], PDO::PARAM_STR);}
+                $query->execute();
+
+                $counter = 0;
+            }
+        }
+
+        $query = $dbh->prepare('insert into benefits values ( :a1, :a2, :a3, :a4)');
+        $query->bindParam('a1', $outB[0], PDO::PARAM_INT);
+        $query->bindParam('a2', $outB[1], PDO::PARAM_INT);
+        $query->bindParam('a3', $outB[2], PDO::PARAM_INT);
+        $query->bindParam('a4', $outB[3], PDO::PARAM_INT);
+        $query->execute();
+        $dbh->query($query)->fetchAll(PDO::FETCH_ASSOC);
+
+    } catch (PDOException $e) {
+        echo "error: " . $e->getMessage() . "<br/>";
+        die();
     }
-}
-
-$group_new = ["id_group" => $count_str +1];
-array_unshift($group, $group_new );
-$xx = pg_insert($dbconn, 'group_', $group);
-if ($xx) {
-    echo "3\n";
-} else {
-    echo "0\n";
-}
-$benefits["id_group"] = $count_str +1;
-c:
-
-$xx = pg_insert($dbconn, 'benefits', $benefits);
-if ($xx) {
-    echo "4\n";
-} else {
-    echo "0\n";
-}
-echo "хуй\n";
-pg_free_result($result);
-pg_close($dbconn);
-
-function check_str (array $x){
-
 }
 
 ?>
