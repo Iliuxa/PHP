@@ -12,13 +12,9 @@
 //x
 
 use App\Entity\TitleEntity;
-
-//register_shutdown_function(function () {
-//    var_dump(error_get_last());
-//    die;
-//});
-
 require_once "bootstrap.php";
+
+
 
 $entityManager = getEntityManager();
 $dtoArray = [];
@@ -27,15 +23,36 @@ $dtoArray = [];
 $benefit = $entityManager->getRepository(\App\Entity\BenefitEntity::class)->findAll();
 foreach ($benefit as $item) {
     $dto = new App\DTO\BenefitDTO();
-    $dto->fullName = $item->getTitle()->getFullName();
-    $dto->shortName = $item->getTitle()->getShortName();
-    $dto->category = $item->getCategory()->getCategoryName();
-    $dto->group = $item->getGroup()->getGroupName();
+    $nameDTO = new App\DTO\IdNameDTO();
+    $shortNameDTO = new App\DTO\IdNameShortDTO();
+
+    $shortNameDTO->id =  $item->getTitle()->getId();
+    $shortNameDTO->name =  $item->getTitle()->getFullName();
+    $shortNameDTO->shortName =  $item->getTitle()->getShortName();
+    $dto->title = $shortNameDTO;
+
+    $nameDTO->id =  $item->getCategory()->getId();
+    $nameDTO->name =  $item->getCategory()->getCategoryName();
+    $dto->category = $nameDTO;
+
+    $nameDTO->id =  $item->getGroup()->getId();
+    $nameDTO->name =  $item->getGroup()->getGroupName();
+    $dto->group = $nameDTO;
+
     $dtoArray[] = $dto;
 }
 
     header("Content-Type: application\json");
     echo json_encode(['success' => true, 'rows' => $dtoArray]);
+
+
+//$dto->fullName = $item->getTitle()->getFullName();
+//$dto->shortName = $item->getTitle()->getShortName();
+//$dto->category = $item->getCategory()->getCategoryName();
+//$dto->group = $item->getGroup()->getGroupName();
+
+
+
 
 
 

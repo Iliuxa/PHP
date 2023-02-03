@@ -3,8 +3,7 @@ namespace App\DTO;
 class BenefitDTO
 {
 
-    public $fullName;
-    public $shortName;
+    public $title;
     public $category;
     public $group;
 }

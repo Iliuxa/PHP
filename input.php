@@ -1,6 +1,6 @@
 <html>
 <body>
-<form method="POST" action="input.php">
+<form method="POST" action="api.php?act=Benefit&method=create">
     <input type="text" name="full_name" placeholder="Enter full name"> <br>
     <input type="text" name="short_name" placeholder="Enter short name "> <br>
     <input type="text" name="category_name" placeholder="Enter category name"> <br>
@@ -14,10 +14,10 @@
 
 use App\Entity\TitleEntity;
 
-register_shutdown_function(function () {
-    var_dump(error_get_last());
-    die;
-});
+//register_shutdown_function(function () {
+//    var_dump(error_get_last());
+//    die;
+//});
 require_once "bootstrap.php";
 
 $entityManager = getEntityManager();
