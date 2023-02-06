@@ -9,16 +9,16 @@ class DropListController
     function getTitle()
     {
         $method = new DropListService();
-        $method->getTitle();
+        return $method->getTitle();
     }
     function getCategory()
     {
         $method = new DropListService();
-        $method->getCategory();
+        return $method->getCategory();
     }
     function getGroup()
     {
         $method = new DropListService();
-        $method->getGroup();
+        return $method->getGroup();
     }
 }

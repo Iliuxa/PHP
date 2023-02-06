@@ -22,8 +22,7 @@ class DropListService
             $dto->shortName = $item->getShortName();
             $dtoArray[] = $dto;
         }
-        header("Content-Type: application\json");
-        echo json_encode(['success' => true, 'rows' => $dtoArray]);
+        return $dtoArray;
     }
 
     function getCategory()
@@ -36,8 +35,7 @@ class DropListService
             $dto->categoruName = $item->getCategoryName();
             $dtoArray[] = $dto;
         }
-        header("Content-Type: application\json");
-        echo json_encode(['success' => true, 'rows' => $dtoArray]);
+        return $dtoArray;
     }
 
     function getGroup()
@@ -50,7 +48,6 @@ class DropListService
             $dto->groupName = $item->getGroupName();
             $dtoArray[] = $dto;
         }
-        header("Content-Type: application\json");
-        echo json_encode(['success' => true, 'rows' => $dtoArray]);
+        return $dtoArray;
     }
 }

@@ -11,7 +11,7 @@ class BenefitController
     function getAll()
     {
         $method = new BenefitService();
-        $method->getAll();
+        return $method->getAll();
     }
 
     function create(array $request)
@@ -20,4 +20,9 @@ class BenefitController
         $method->create($request);
     }
 
+    function modify(array $request)
+    {
+        $method = new BenefitService();
+        $method->modify($request);
+    }
 }

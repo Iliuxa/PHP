@@ -12,15 +12,15 @@ require_once "vendor/autoload.php";
 
 function getEntityManagerSec(): EntityManager
 {
-    $paths = [__DIR__.'./Entity'];
+    $paths = [__DIR__ . './Entity'];
     $isDevMode = true;
 
     $dbParams = array(
-        'driver'   => 'pdo_pgsql',
-        'user'     => 'postgres',
+        'driver' => 'pdo_pgsql',
+        'user' => 'postgres',
         'password' => 'root',
         'host' => 'localhost',
-        'dbname'   => 'postgres',
+        'dbname' => 'postgres',
     );
 
     $config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode);
@@ -31,6 +31,7 @@ function getEntityManagerSec(): EntityManager
         die();
     }
 }
+
 function getEntityManager(): EntityManager
 {
     $config = new Configuration;
@@ -52,12 +53,24 @@ function getEntityManager(): EntityManager
 
 
     $connectionOptions = $dbParams = array(
-        'driver'   => 'pdo_pgsql',
-        'user'     => 'postgres',
+        'driver' => 'pdo_pgsql',
+        'user' => 'postgres',
         'password' => 'root',
         'host' => 'localhost',
-        'dbname'   => 'postgres',
+        'dbname' => 'postgres',
     );
 
     return EntityManager::create($connectionOptions, $config);
+}
+
+function outputJson($error, $messege, $responseCode = 400)
+{
+    header("Content-Type: application\json");
+    if ($error) {
+        echo json_encode(['success' => true, 'rows' => $messege]);
+    } else {
+        echo json_encode(['success' => false, 'reason' => $messege]);
+        http_response_code($responseCode);
+    }
+
 }
