@@ -1,5 +1,6 @@
 <?php
 
+use App\Constants\Constants;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\ORM\Configuration;
@@ -63,13 +64,13 @@ function getEntityManager(): EntityManager
     return EntityManager::create($connectionOptions, $config);
 }
 
-function outputJson($error, $messege, $responseCode = 400)
+function outputJson($success, $message, $responseCode = Constants::HTTP_BAD_REQUEST)
 {
     header("Content-Type: application\json");
-    if ($error) {
-        echo json_encode(['success' => true, 'rows' => $messege]);
+    if ($success) {
+        echo json_encode(['success' => $success, 'rows' => $message]);
     } else {
-        echo json_encode(['success' => false, 'reason' => $messege]);
+        echo json_encode(['success' => $success, 'reason' => $message]);
         http_response_code($responseCode);
     }
 

@@ -12,6 +12,7 @@ use App\Entity\GroupEntity;
 use App\Entity\TitleEntity;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
+use DateTime;
 
 require_once "bootstrap.php";
 
@@ -35,7 +36,6 @@ class BenefitService
             $shortNameDTO->shortName = $item->getTitle()->getShortName();
             $dto->title = $shortNameDTO;
 
-
             $nameDTO->id = $item->getCategory()->getId();
             $nameDTO->name = $item->getCategory()->getCategoryName();
             $dto->category = $nameDTO;
@@ -44,6 +44,15 @@ class BenefitService
             $nameDTO->id = $item->getGroup()->getId();
             $nameDTO->name = $item->getGroup()->getGroupName();
             $dto->group = $nameDTO;
+
+            $dto->startDate = $item->getStartDate()->format('d.m.Y');
+            $dto->endDate = $item->getEndDate()->format('d.m.Y');
+            $dto->specialRight = $item->getSpecialRight();
+            $dto->advantageRight = $item->getAdvantageRight();
+            $dto->baseVI = $item->getBaseVI();
+            $dto->specialBaseVI = $item->getSpecialBaseVI();
+            $dto->bvi = $item->getBvi();
+            $dto->active = $item->getActive();
 
             $dtoArray[] = $dto;
         }
@@ -87,12 +96,24 @@ class BenefitService
             $benefitsNew->setTitle($title);
             $benefitsNew->setCategory($category);
             $benefitsNew->setGroup($group);
-            $entityManager->persist($benefitsNew);
 
+            $benefitsNew->setStartDate(DateTime::createFromFormat('d.m.Y', $request['start_date']));
+            $benefitsNew->setEndDate(DateTime::createFromFormat('d.m.Y', $request['end_date']));
+
+            $benefitsNew->setSpecialRight(!$request['special_right'] == null);
+            $benefitsNew->setAdvantageRight(!($request['advantage_right'] == null));
+            $benefitsNew->setBaseVI(!($request['base_VI'] == null));
+            $benefitsNew->setSpecialBaseVI(!($request['special_base_VI'] == null));
+            $benefitsNew->setBvi(!($request['bvi'] == null));
+
+            $today = new DateTime('now');
+            $benefitsNew->setActive($today > $benefitsNew->getStartDate() && $today < $benefitsNew->getEndDate());
+
+            $entityManager->persist($benefitsNew);
             $entityManager->flush();
 
         } catch (OptimisticLockException|ORMException $e) {
-            throw new \Exception('Не удалось создать новую запись.', Constants::INTERNAL_SERVER_ERROR);
+            throw new \Exception('Не удалось создать новую запись.', Constants::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -141,6 +162,19 @@ class BenefitService
                     }
                     $benefit->setGroup($group);
                 }
+
+                $benefit->setStartDate(DateTime::createFromFormat('d.m.Y', $request['start_date']));
+                $benefit->setEndDate(DateTime::createFromFormat('d.m.Y', $request['end_date']));
+
+                $benefit->setSpecialRight(!$request['special_right'] == null);
+                $benefit->setAdvantageRight(!($request['advantage_right'] == null));
+                $benefit->setBaseVI(!($request['base_VI'] == null));
+                $benefit->setSpecialBaseVI(!($request['special_base_VI'] == null));
+                $benefit->setBvi(!($request['bvi'] == null));
+
+                $today = new DateTime('now');
+                $benefit->setActive($today > $benefit->getStartDate() && $today < $benefit->getEndDate());
+
                 $entityManager->persist($benefit);
                 $entityManager->flush();
             } else {
@@ -148,7 +182,7 @@ class BenefitService
             }
 
         } catch (OptimisticLockException|ORMException $e) {
-            throw new \Exception('Не удалось изменить запись.', Constants::INTERNAL_SERVER_ERROR);
+            throw new \Exception('Не удалось изменить запись.', Constants::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }
