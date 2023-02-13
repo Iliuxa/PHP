@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Service\BenefitService;
+use App\Service\PDFService;
 
 require_once "bootstrap.php";
 
@@ -14,6 +15,8 @@ class BenefitController
     {
         $this->service = new BenefitService();
     }
+
+
 
     /**
      * Вывод всех льгот
@@ -44,5 +47,24 @@ class BenefitController
     function modify(array $request)
     {
         $this->service->modify($request);
+    }
+
+    /**
+     * Вывод данных о льготе в PDF
+     * @return void
+     */
+    function getPDF()
+    {
+        $pdf = new PDFService();
+        $pdf->outputPDf($this->getAll());
+    }
+
+    /**
+     * Вывод льгот которые действительны в определённый год
+     * @return array
+     */
+    function getValidInYear()
+    {
+        return $this->service->getValidInYear();
     }
 }

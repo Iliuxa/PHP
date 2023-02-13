@@ -4,6 +4,13 @@ use DateTime;
 class BenefitDTO
 {
 
+    public function __construct()
+    {
+        $this->title = new IdNameShortDTO();
+        $this->category = new IdNameDTO();
+        $this->group = new IdNameDTO();
+    }
+
     /**
      * Идентификатор льготы
      * @var int

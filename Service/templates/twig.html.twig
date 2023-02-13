@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hello</title>
+</head>
+<style type="text/css">
+    TABLE {
+        table-layout: fixed;
+        border-collapse: collapse; /* Убираем двойные линии между ячейками */
+    }
+    TD, TH {
+        padding: 3px; /* Поля вокруг содержимого таблицы */
+        border: 1px solid black; /* Параметры рамки */
+        text-align: center;
+    }
+    TH {
+        background: #b0e0e6; /* Цвет фона */
+    }
+</style>
+<body>
+<br id="navigation">
+<table >
+    <thead>
+    <tr>
+        <th rowspan= "2" >Наименование</th>
+        <th rowspan = "2" >Особое право</th>
+        <th rowspan = "2" >Преимущественное право</th>
+        <th rowspan = "2" >Основание для допуска к ВИ</th>
+        <th colspan= "2" >Специальная квота</th>
+    </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td style="background-color: #b0e0e6" >Основание для допуска к ВИ</td>
+            <td style="background-color: #b0e0e6" >БВИ</td>
+        </tr>
+    {% for i in index %}
+        <tr {% if i.active != 1 %} style="background-color: #c0c0c0" {% endif %}>
+            <td>{{ i.title.shortName }}: {{ i.title.name }}</td>
+            <td>{% if i.specialRight == 1 %}<img src="pic.jpg" width="20" height="20">{% endif %}</td>
+            <td>{% if i.advantageRight == 1 %}<img src="pic.jpg" width="20" height="20">{% endif %}</td>
+            <td>{% if i.baseVI == 1 %}<img src="pic.jpg" width="20" height="20">{% endif %}</td>
+            <td>{% if i.specialBaseVI %}<img src="pic.jpg" width="20" height="20">{% endif %}</td>
+            <td>{% if i.bvi %}<img src="pic.jpg" width="20" height="20">{% endif %}</td>
+            </br>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</body>
+</html>

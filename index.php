@@ -70,7 +70,7 @@ foreach ($benefit as $item) {
 //inner join title t ON b.id_title = t.id_title
 //inner join category c ON b.id_category  = c.id_category
 //inner join group_ g ON b.id_group  = g.id_group ';
-//
+////
 //$array_json = [];
 //try {
 //    $dbh = new PDO('pgsql:host=localhost; dbname=postgres', "postgres", "root", [

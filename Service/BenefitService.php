@@ -4,66 +4,82 @@ namespace App\Service;
 
 use App\Constants\Constants;
 use App\DTO\BenefitDTO;
-use App\DTO\IdNameDTO;
-use App\DTO\IdNameShortDTO;
 use App\Entity\BenefitEntity;
 use App\Entity\CategoryEntity;
 use App\Entity\GroupEntity;
 use App\Entity\TitleEntity;
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Util\Debug;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use DateTime;
+
+use Doctrine\ORM\Query\ResultSetMapping;
 
 require_once "bootstrap.php";
 
 class BenefitService
 {
-    function getAll()
+    function getValidInYear()
     {
         $entityManager = getEntityManager();
-        $dtoArray = [];
-        /** @var BenefitEntity $benefit */
-        $benefit = $entityManager->getRepository(BenefitEntity::class)->findAll();
-        foreach ($benefit as $item) {
-            $dto = new BenefitDTO();
-            $nameDTO = new IdNameDTO();
-            $shortNameDTO = new IdNameShortDTO();
 
-            $dto->id = $item->getId();
+        $year = DateTime::createFromFormat('Y', $_GET['year']);
+        $year->setDate($year->format('Y'), 1, 1);
+        $year->setTime(0, 0, 0);
 
-            $shortNameDTO->id = $item->getTitle()->getId();
-            $shortNameDTO->name = $item->getTitle()->getFullName();
-            $shortNameDTO->shortName = $item->getTitle()->getShortName();
-            $dto->title = $shortNameDTO;
+        $year1 = clone $year;
+        $year1->modify("+1 year");
 
-            $nameDTO->id = $item->getCategory()->getId();
-            $nameDTO->name = $item->getCategory()->getCategoryName();
-            $dto->category = $nameDTO;
+        $criteria = new Criteria();
+        $criteria->where(Criteria::expr()->orX(
+            Criteria::expr()->andX(
+                Criteria::expr()->gt('b.startDate', $year), Criteria::expr()->lt('b.startDate', $year1)
+            ),
+            Criteria::expr()->andX(
+                Criteria::expr()->gt('b.endDate', $year), Criteria::expr()->lt('b.endDate', $year1)
+            ),
+            Criteria::expr()->andX(
+                Criteria::expr()->lt('b.startDate', $year), Criteria::expr()->gt('b.endDate', $year1)
+            ),
+        ));
 
-            $nameDTO = new IdNameDTO();
-            $nameDTO->id = $item->getGroup()->getId();
-            $nameDTO->name = $item->getGroup()->getGroupName();
-            $dto->group = $nameDTO;
+        $qb = $entityManager->createQueryBuilder();
+        $qb->select('b')
+            ->from(BenefitEntity::class, 'b')
+            ->addCriteria($criteria);
 
-            $dto->startDate = $item->getStartDate()->format('d.m.Y');
-            $dto->endDate = $item->getEndDate()->format('d.m.Y');
-            $dto->specialRight = $item->getSpecialRight();
-            $dto->advantageRight = $item->getAdvantageRight();
-            $dto->baseVI = $item->getBaseVI();
-            $dto->specialBaseVI = $item->getSpecialBaseVI();
-            $dto->bvi = $item->getBvi();
-            $dto->active = $item->getActive();
+        $query = $qb->getQuery()->getResult();
 
-            $dtoArray[] = $dto;
-        }
+        $dtoArray = $this->createDTO($query);
         return $dtoArray;
     }
 
+    //==================Работает=========================
+
+//        $q = "select t.full_name , t.short_name , c.category_name ,g.group_name, b.start_date, b.end_date, b.special_right,
+//b.advantage_right, b.base_vi, b.special_base_vi, b.bvi, b.active
+//from benefits b
+//inner join title t ON b.id_title = t.id_title
+//inner join category c ON b.id_category  = c.id_category
+//inner join group_ g ON b.id_group  = g.id_group
+//where  ((to_date('2022-01-01', 'YYYY-MM-DD') < b.start_date and  b.start_date < to_date('2023-01-01', 'YYYY-MM-DD'))
+//or  (to_date('2022-01-01', 'YYYY-MM-DD') < b.end_date and b.end_date < to_date('2023-01-01', 'YYYY-MM-DD')))";
+//         $query = $entityManager->getConnection()->executeQuery($q)->fetchAllAssociative()
+
+
+    function getAll()
+    {
+        $entityManager = getEntityManager();
+        $benefit = $entityManager->getRepository(BenefitEntity::class)->findAll();
+        $dtoArray = $this->createDTO($benefit);
+        return $dtoArray;
+    }
 
     function create(array $request)
     {
         foreach ($request as $item) {
-            if ($item == '') {
+            if (empty($item)) {
                 throw new \Exception('Bad request', Constants::HTTP_BAD_REQUEST);
             }
         }
@@ -184,6 +200,36 @@ class BenefitService
         } catch (OptimisticLockException|ORMException $e) {
             throw new \Exception('Не удалось изменить запись.', Constants::HTTP_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    function createDTO($query)
+    {
+        foreach ($query as $item) {
+            $dto = new BenefitDTO();
+            $dto->id = $item->getId();
+
+            $dto->title->id = $item->getTitle()->getId();
+            $dto->title->name = $item->getTitle()->getFullName();
+            $dto->title->shortName = $item->getTitle()->getShortName();
+
+            $dto->category->id = $item->getCategory()->getId();
+            $dto->category->name = $item->getCategory()->getCategoryName();
+
+            $dto->group->id = $item->getGroup()->getId();
+            $dto->group->name = $item->getGroup()->getGroupName();
+
+            $dto->startDate = $item->getStartDate()->format('d.m.Y');
+            $dto->endDate = $item->getEndDate()->format('d.m.Y');
+            $dto->specialRight = $item->getSpecialRight();
+            $dto->advantageRight = $item->getAdvantageRight();
+            $dto->baseVI = $item->getBaseVI();
+            $dto->specialBaseVI = $item->getSpecialBaseVI();
+            $dto->bvi = $item->getBvi();
+            $dto->active = $item->getActive();
+
+            $dtoArray[] = $dto;
+        }
+        return $dtoArray;
     }
 }
 
