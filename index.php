@@ -7,34 +7,85 @@
 //     die;
 // });
 
-// var_dump(); die;  
+// var_dump(); die;
+// https://www.php.net/manual/en/pdo.connections.php
+//x
 
-$dbconn =  pg_connect("host=localhost dbname=postgres user=postgres password=root")
-    or die('Не удалось соединиться: ' . pg_last_error());
+use App\Entity\TitleEntity;
+require_once "bootstrap.php";
 
 
 
-$query = 'select t.full_name , t.short_name , c.category_name ,g.group_name 
-from benefits b ,category c ,group_ g ,title t
-where b.id_title = t.id_title 
-and  b.id_category = c.id_category 
-and  b.id_group  = g.id_group ';
-$result = pg_query($dbconn, $query) or die('Ошибка запроса: ' . pg_last_error());
+$entityManager = getEntityManager();
+$dtoArray = [];
 
-for($i = 0; $i < 2; $i++){
-    $array_json[$i] = $array = pg_fetch_array($result, $i, PGSQL_NUM);
+/** @var \App\Entity\BenefitEntity $benefit */
+$benefit = $entityManager->getRepository(\App\Entity\BenefitEntity::class)->findAll();
+foreach ($benefit as $item) {
+    $dto = new App\DTO\BenefitDTO();
+    $nameDTO = new App\DTO\IdNameDTO();
+    $shortNameDTO = new App\DTO\IdNameShortDTO();
+
+    $shortNameDTO->id =  $item->getTitle()->getId();
+    $shortNameDTO->name =  $item->getTitle()->getFullName();
+    $shortNameDTO->shortName =  $item->getTitle()->getShortName();
+    $dto->title = $shortNameDTO;
+
+    $nameDTO->id =  $item->getCategory()->getId();
+    $nameDTO->name =  $item->getCategory()->getCategoryName();
+    $dto->category = $nameDTO;
+
+    $nameDTO->id =  $item->getGroup()->getId();
+    $nameDTO->name =  $item->getGroup()->getGroupName();
+    $dto->group = $nameDTO;
+
+    $dtoArray[] = $dto;
 }
 
+    header("Content-Type: application\json");
+    echo json_encode(['success' => true, 'rows' => $dtoArray]);
 
 
-header("Content-Type: application\json");
-echo json_encode($array_json, JSON_FORCE_OBJECT);
+//$dto->fullName = $item->getTitle()->getFullName();
+//$dto->shortName = $item->getTitle()->getShortName();
+//$dto->category = $item->getCategory()->getCategoryName();
+//$dto->group = $item->getGroup()->getGroupName();
 
 
-pg_free_result($result);
 
 
-pg_close($dbconn);
 
-?>
+
+///** @var  $benefit */
+///** @var \App\Entity\BenefitEntity $benefit */
+//$benefit = $entityManager->getRepository(\App\Entity\BenefitEntity::class)->find(1);
+///** @var \App\Entity\GroupEntity $group */
+//$group = $benefit->getGroup();
+//
+//var_dump($benefit->getGroup());
+//die;
+
+//$query = 'select t.full_name , t.short_name , c.category_name ,g.group_name
+//from benefits b
+//inner join title t ON b.id_title = t.id_title
+//inner join category c ON b.id_category  = c.id_category
+//inner join group_ g ON b.id_group  = g.id_group ';
+////
+//$array_json = [];
+//try {
+//    $dbh = new PDO('pgsql:host=localhost; dbname=postgres', "postgres", "root", [
+//        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+//    ]);
+//    $array_json = $dbh->query($query)->fetchAll(PDO::FETCH_ASSOC);
+//
+//    header("Content-Type: application\json");
+//    echo json_encode(['success' => true, 'rows' => $array_json]);
+//
+//} catch (PDOException $e) {
+//    echo "error: " . $e->getMessage() . "<br/>";
+//    die();
+//}
+
+
+
 
