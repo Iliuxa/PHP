@@ -16,8 +16,6 @@ class BenefitController
         $this->service = new BenefitService();
     }
 
-
-
     /**
      * Вывод всех льгот
      * @return array
@@ -25,6 +23,15 @@ class BenefitController
     function getAll(): array
     {
         return $this->service->getAll();
+    }
+
+    /**
+     * Вывод льгот которые действительны в определённый год
+     * @return array
+     */
+    function getValidInYear()
+    {
+        return $this->service->getValidInYear();
     }
 
     /**
@@ -49,22 +56,4 @@ class BenefitController
         $this->service->modify($request);
     }
 
-    /**
-     * Вывод данных о льготе в PDF
-     * @return void
-     */
-    function getPDF()
-    {
-        $pdf = new PDFService();
-        $pdf->outputPDf($this->getAll());
-    }
-
-    /**
-     * Вывод льгот которые действительны в определённый год
-     * @return array
-     */
-    function getValidInYear()
-    {
-        return $this->service->getValidInYear();
-    }
 }

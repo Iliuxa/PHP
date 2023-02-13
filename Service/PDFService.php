@@ -1,17 +1,22 @@
 <?php
 
 namespace App\Service;
+use Twig\Environment;
 use Twig\Extension\DebugExtension;
+use Twig\Loader\FilesystemLoader;
 
 require_once "bootstrap.php";
 
 class PDFService
 {
 
+    /**
+     * @throws \MpdfException
+     */
     function outputPDf($response)
     {
-        $loader = new \Twig\Loader\FilesystemLoader(__DIR__ . '/templates');
-        $twig = new \Twig\Environment($loader, ['debug' => true]);
+        $loader = new FilesystemLoader(__DIR__ . '/templates');
+        $twig = new Environment($loader, ['debug' => true]);
         $twig->addExtension(new DebugExtension());
 
         $template = $twig->load('twig.html.twig');

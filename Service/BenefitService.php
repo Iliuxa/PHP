@@ -51,11 +51,11 @@ class BenefitService
 
         $query = $qb->getQuery()->getResult();
 
-        $dtoArray = $this->createDTO($query);
+        $dtoArray = $this->createDTO($query, true);
         return $dtoArray;
     }
 
-    //==================Работает=========================
+    //==================Работает======NativeSQL======================//
 
 //        $q = "select t.full_name , t.short_name , c.category_name ,g.group_name, b.start_date, b.end_date, b.special_right,
 //b.advantage_right, b.base_vi, b.special_base_vi, b.bvi, b.active
@@ -72,7 +72,7 @@ class BenefitService
     {
         $entityManager = getEntityManager();
         $benefit = $entityManager->getRepository(BenefitEntity::class)->findAll();
-        $dtoArray = $this->createDTO($benefit);
+        $dtoArray = $this->createDTO($benefit, false);
         return $dtoArray;
     }
 
@@ -202,7 +202,7 @@ class BenefitService
         }
     }
 
-    function createDTO($query)
+    function createDTO($query, $active)
     {
         foreach ($query as $item) {
             $dto = new BenefitDTO();
@@ -225,7 +225,11 @@ class BenefitService
             $dto->baseVI = $item->getBaseVI();
             $dto->specialBaseVI = $item->getSpecialBaseVI();
             $dto->bvi = $item->getBvi();
-            $dto->active = $item->getActive();
+            if ($active) {
+                $dto->active = true;
+            } else {
+                $dto->active = $item->getActive();
+            }
 
             $dtoArray[] = $dto;
         }
