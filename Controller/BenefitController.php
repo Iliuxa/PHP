@@ -27,11 +27,12 @@ class BenefitController
 
     /**
      * Вывод льгот которые действительны в определённый год
+     * @param array $request
      * @return array
      */
-    function getValidInYear()
+    function getValidInYear(array $request)
     {
-        return $this->service->getValidInYear();
+        return $this->service->getValidInYear($request);
     }
 
     /**

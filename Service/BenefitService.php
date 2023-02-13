@@ -20,11 +20,11 @@ require_once "bootstrap.php";
 
 class BenefitService
 {
-    function getValidInYear()
+    function getValidInYear($request)
     {
         $entityManager = getEntityManager();
 
-        $year = DateTime::createFromFormat('Y', $_GET['year']);
+        $year = DateTime::createFromFormat('Y', $request['year']);
         $year->setDate($year->format('Y'), 1, 1);
         $year->setTime(0, 0, 0);
 

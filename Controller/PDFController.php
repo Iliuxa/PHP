@@ -23,16 +23,17 @@ class PDFController
      */
     function getAllPDF()
     {
-        $this->service->outputPDf((new BenefitController)->getAll());
+        $this->service->outputPDf((new BenefitService())->getAll());
     }
 
     /**
      * Вывод льгот в PDF, действительных в определённый год
+     * @param array $request
      * @return void
      * @throws \MpdfException
      */
-    function getValidInYearPDF()
+    function getValidInYearPDF(array $request)
     {
-        $this->service->outputPDf((new BenefitController)->getValidInYear());
+        $this->service->outputPDf((new BenefitService())->getValidInYear($request));
     }
 }
