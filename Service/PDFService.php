@@ -13,13 +13,13 @@ class PDFService
     /**
      * @throws \MpdfException
      */
-    function outputPDf($response)
+    public function outputPDf($response)
     {
         $loader = new FilesystemLoader(__DIR__ . '/templates');
         $twig = new Environment($loader, ['debug' => true]);
         $twig->addExtension(new DebugExtension());
 
-        $template = $twig->load('twig.html.twig');
+        $template = $twig->load('table.html.twig');
 
         $html = $template->render([
             'index' => $response,

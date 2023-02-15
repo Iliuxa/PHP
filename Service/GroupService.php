@@ -2,19 +2,20 @@
 
 namespace App\Service;
 
-use App\DTO\GroupDTO;
+use App\DTO\IdNameDTO;
 use App\Entity\GroupEntity;
 
 class GroupService
 {
-    function getGroup()
+    public function getGroup()
     {
         $dtoArray = [];
         $entityManager = getEntityManager();
         $category = $entityManager->getRepository(GroupEntity::class)->findAll();
         foreach ($category as $item) {
-            $dto = new GroupDTO();
-            $dto->groupName = $item->getGroupName();
+            $dto = new IdNameDTO();
+            $dto->id = $item->getId();
+            $dto->name = $item->getGroupName();
             $dtoArray[] = $dto;
         }
         return $dtoArray;

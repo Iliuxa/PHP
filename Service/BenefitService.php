@@ -9,7 +9,6 @@ use App\Entity\CategoryEntity;
 use App\Entity\GroupEntity;
 use App\Entity\TitleEntity;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\Common\Util\Debug;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use DateTime;
@@ -20,7 +19,7 @@ require_once "bootstrap.php";
 
 class BenefitService
 {
-    function getValidInYear($request)
+    public function getValidInYear($request)
     {
         $entityManager = getEntityManager();
 
@@ -68,7 +67,7 @@ class BenefitService
 //         $query = $entityManager->getConnection()->executeQuery($q)->fetchAllAssociative()
 
 
-    function getAll()
+    public function getAll()
     {
         $entityManager = getEntityManager();
         $benefit = $entityManager->getRepository(BenefitEntity::class)->findAll();
@@ -76,7 +75,7 @@ class BenefitService
         return $dtoArray;
     }
 
-    function create(array $request)
+    public function create(array $request)
     {
         foreach ($request as $item) {
             if (empty($item)) {
@@ -87,7 +86,7 @@ class BenefitService
         $entityManager = getEntityManager();
         try {
             $title = $entityManager->getRepository(TitleEntity::class)->findOneByFullName([$request['full_name']]);
-            if ($title == null) {    //делаем новую запись
+            if (empty($title)) {    //делаем новую запись
                 $title = new TitleEntity();
                 $title->setFullName($request['full_name']);
                 $title->setShortName($request['short_name']);
@@ -95,14 +94,14 @@ class BenefitService
             }
 
             $category = $entityManager->getRepository(\App\Entity\CategoryEntity::class)->findOneByCategoryName([$request['category_name']]);
-            if ($category == null) {    //делаем новую запись
+            if (empty($category)) {    //делаем новую запись
                 $category = new \App\Entity\CategoryEntity();
                 $category->setCategoryName($request['category_name']);
                 $entityManager->persist($category);
             }
 
             $group = $entityManager->getRepository(\App\Entity\GroupEntity::class)->findOneByGroupName([$request['group_name']]);
-            if ($group == null) {    //делаем новую запись
+            if (empty($group)) {    //делаем новую запись
                 $group = new \App\Entity\GroupEntity();
                 $group->setGroupName($request['group_name']);
                 $entityManager->persist($group);
@@ -116,11 +115,11 @@ class BenefitService
             $benefitsNew->setStartDate(DateTime::createFromFormat('d.m.Y', $request['start_date']));
             $benefitsNew->setEndDate(DateTime::createFromFormat('d.m.Y', $request['end_date']));
 
-            $benefitsNew->setSpecialRight(!$request['special_right'] == null);
-            $benefitsNew->setAdvantageRight(!($request['advantage_right'] == null));
-            $benefitsNew->setBaseVI(!($request['base_VI'] == null));
-            $benefitsNew->setSpecialBaseVI(!($request['special_base_VI'] == null));
-            $benefitsNew->setBvi(!($request['bvi'] == null));
+            $benefitsNew->setSpecialRight(!empty($request['special_right']));
+            $benefitsNew->setAdvantageRight(!empty($request['advantage_right']));
+            $benefitsNew->setBaseVI(!empty($request['base_VI']));
+            $benefitsNew->setSpecialBaseVI(!empty($request['special_base_VI']));
+            $benefitsNew->setBvi(!empty($request['bvi']));
 
             $today = new DateTime('now');
             $benefitsNew->setActive($today > $benefitsNew->getStartDate() && $today < $benefitsNew->getEndDate());
@@ -133,10 +132,10 @@ class BenefitService
         }
     }
 
-    function modify(array $request)
+    public function modify(array $request)
     {
         foreach ($request as $item) {
-            if ($item == '') {
+            if (empty($item)) {
                 throw new \Exception('Bad request', Constants::HTTP_BAD_REQUEST);
             }
         }
@@ -144,10 +143,10 @@ class BenefitService
         try {
             /** @var BenefitEntity $benefit */
             $benefit = $entityManager->getRepository(BenefitEntity::class)->findOneById([$request['id']]);
-            if ($benefit != null) {
+            if (!empty($benefit)) {
                 if ($benefit->getTitle()->getFullName() != $request['full_name']) {
                     $title = $entityManager->getRepository(TitleEntity::class)->findOneByFullName([$request['full_name']]);
-                    if ($title == null) {    //делаем новую запись
+                    if (empty($title)) {    //делаем новую запись
                         $title = new TitleEntity();
                         $title->setFullName($request['full_name']);
                         $title->setShortName($request['short_name']);
@@ -161,7 +160,7 @@ class BenefitService
 
                 if ($benefit->getCategory()->getCategoryName() != $request['category_name']) {
                     $category = $entityManager->getRepository(CategoryEntity::class)->findOneByCategoryName([$request['category_name']]);
-                    if ($category == null) {    //делаем новую запись
+                    if (empty($category)) {    //делаем новую запись
                         $category = new CategoryEntity();
                         $category->setCategoryName($request['category_name']);
                         $entityManager->persist($category);
@@ -171,7 +170,7 @@ class BenefitService
 
                 if ($benefit->getGroup()->getGroupName() != $request['group_name']) {
                     $group = $entityManager->getRepository(GroupEntity::class)->findOneByGroupName([$request['group_name']]);
-                    if ($group == null) {    //делаем новую запись
+                    if (empty($group)) {    //делаем новую запись
                         $group = new GroupEntity();
                         $group->setGroupName($request['group_name']);
                         $entityManager->persist($group);
@@ -182,11 +181,11 @@ class BenefitService
                 $benefit->setStartDate(DateTime::createFromFormat('d.m.Y', $request['start_date']));
                 $benefit->setEndDate(DateTime::createFromFormat('d.m.Y', $request['end_date']));
 
-                $benefit->setSpecialRight(!$request['special_right'] == null);
-                $benefit->setAdvantageRight(!($request['advantage_right'] == null));
-                $benefit->setBaseVI(!($request['base_VI'] == null));
-                $benefit->setSpecialBaseVI(!($request['special_base_VI'] == null));
-                $benefit->setBvi(!($request['bvi'] == null));
+                $benefit->setSpecialRight(!empty($request['special_right']));
+                $benefit->setAdvantageRight(!empty($request['advantage_right']));
+                $benefit->setBaseVI(!empty($request['base_VI']));
+                $benefit->setSpecialBaseVI(!empty($request['special_base_VI']));
+                $benefit->setBvi(!empty($request['bvi']));
 
                 $today = new DateTime('now');
                 $benefit->setActive($today > $benefit->getStartDate() && $today < $benefit->getEndDate());
@@ -202,7 +201,7 @@ class BenefitService
         }
     }
 
-    function createDTO($query, $active)
+    private function createDTO($query, $active)
     {
         foreach ($query as $item) {
             $dto = new BenefitDTO();

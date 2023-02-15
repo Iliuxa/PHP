@@ -8,7 +8,7 @@ use App\Service\TitleServise;
 
 class TitleController
 {
-    public TitleServise $service;
+    private TitleServise $service;
 
     public function __construct()
     {
@@ -19,7 +19,7 @@ class TitleController
      * Получить все названия льгот
      * @return array
      */
-    function getTitle()
+    public function getTitle()
     {
         return $this->service->getTitle();
     }
