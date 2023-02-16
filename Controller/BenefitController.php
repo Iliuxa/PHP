@@ -3,13 +3,12 @@
 namespace App\Controller;
 
 use App\Service\BenefitService;
-use App\Service\PDFService;
 
 require_once "bootstrap.php";
 
 class BenefitController
 {
-    public BenefitService $service;
+    private BenefitService $service;
 
     public function __construct()
     {
@@ -20,7 +19,7 @@ class BenefitController
      * Вывод всех льгот
      * @return array
      */
-    function getAll(): array
+    public function getAll(): array
     {
         return $this->service->getAll();
     }
@@ -30,7 +29,7 @@ class BenefitController
      * @param array $request
      * @return array
      */
-    function getValidInYear(array $request)
+    public function getValidInYear(array $request)
     {
         return $this->service->getValidInYear($request);
     }
@@ -41,7 +40,7 @@ class BenefitController
      * @return void
      * @throws \Exception
      */
-    function create(array $request)
+    public function create(array $request)
     {
         $this->service->create($request);
     }
@@ -52,7 +51,7 @@ class BenefitController
      * @return void
      * @throws \Exception
      */
-    function modify(array $request)
+    public function modify(array $request)
     {
         $this->service->modify($request);
     }

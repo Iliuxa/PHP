@@ -9,7 +9,7 @@ require_once "bootstrap.php";
 
 class PDFController
 {
-    public PDFService $service;
+    private PDFService $service;
 
     public function __construct()
     {
@@ -21,7 +21,7 @@ class PDFController
      * @return void
      * @throws \MpdfException
      */
-    function getAllPDF()
+    public function getAllPDF()
     {
         $this->service->outputPDf((new BenefitService())->getAll());
     }
@@ -32,7 +32,7 @@ class PDFController
      * @return void
      * @throws \MpdfException
      */
-    function getValidInYearPDF(array $request)
+    public function getValidInYearPDF(array $request)
     {
         $this->service->outputPDf((new BenefitService())->getValidInYear($request));
     }

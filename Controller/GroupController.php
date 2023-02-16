@@ -6,7 +6,7 @@ use App\Service\GroupService;
 
 class GroupController
 {
-    public GroupService $service;
+    private GroupService $service;
 
     public function __construct()
     {
@@ -17,7 +17,7 @@ class GroupController
      * Получить все группы льгот
      * @return array
      */
-    function getGroup()
+    public function getGroup()
     {
         $method = new GroupService();
         return $this->service->getGroup();

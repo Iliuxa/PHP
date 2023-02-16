@@ -23,51 +23,51 @@
 
 <?php
 
-use App\Entity\TitleEntity;
+// use App\Entity\TitleEntity;
 
-//register_shutdown_function(function () {
-//    var_dump(error_get_last());
-//    die;
-//});
-require_once "bootstrap.php";
+// //register_shutdown_function(function () {
+// //    var_dump(error_get_last());
+// //    die;
+// //});
+// require_once "bootstrap.php";
 
-$entityManager = getEntityManager();
+// $entityManager = getEntityManager();
 
-$title = $entityManager->getRepository(TitleEntity::class)->findOneByFullName([$_POST['full_name']]);
-if ($title == null) {    //делаем новую запись
-    $title = new TitleEntity();
-    $title->setFullName($_POST['full_name']);
-    $title->setShortName($_POST['short_name']);
-}
+// $title = $entityManager->getRepository(TitleEntity::class)->findOneByFullName([$_POST['full_name']]);
+// if ($title == null) {    //делаем новую запись
+//     $title = new TitleEntity();
+//     $title->setFullName($_POST['full_name']);
+//     $title->setShortName($_POST['short_name']);
+// }
 
-$category = $entityManager->getRepository(\App\Entity\CategoryEntity::class)->findOneByCategoryName([$_POST['category_name']]);
-if ($category == null) {    //делаем новую запись
-    $category = new \App\Entity\CategoryEntity();
-    $category->setCategoryName($_POST['category_name']);
-}
+// $category = $entityManager->getRepository(\App\Entity\CategoryEntity::class)->findOneByCategoryName([$_POST['category_name']]);
+// if ($category == null) {    //делаем новую запись
+//     $category = new \App\Entity\CategoryEntity();
+//     $category->setCategoryName($_POST['category_name']);
+// }
 
-$group = $entityManager->getRepository(\App\Entity\GroupEntity::class)->findOneByGroupName([$_POST['group_name']]);
-if ($group == null) {    //делаем новую запись
-    $group = new \App\Entity\GroupEntity();
-    $group->setGroupName($_POST['group_name']);
-}
+// $group = $entityManager->getRepository(\App\Entity\GroupEntity::class)->findOneByGroupName([$_POST['group_name']]);
+// if ($group == null) {    //делаем новую запись
+//     $group = new \App\Entity\GroupEntity();
+//     $group->setGroupName($_POST['group_name']);
+// }
 
-try {
-    $benefitsNew = new \App\Entity\BenefitEntity();
-    $benefitsNew->setTitle($title);
-    $benefitsNew->setCategory($category);
-    $benefitsNew->setGroup($group);
+// try {
+//     $benefitsNew = new \App\Entity\BenefitEntity();
+//     $benefitsNew->setTitle($title);
+//     $benefitsNew->setCategory($category);
+//     $benefitsNew->setGroup($group);
 
-    $entityManager->persist($title);
-    $entityManager->persist($category);
-    $entityManager->persist($group);
-    $entityManager->persist($benefitsNew);
-    $entityManager->flush();
+//     $entityManager->persist($title);
+//     $entityManager->persist($category);
+//     $entityManager->persist($group);
+//     $entityManager->persist($benefitsNew);
+//     $entityManager->flush();
 
-} catch (\Doctrine\ORM\OptimisticLockException|\Doctrine\ORM\ORMException $e) {
-    var_dump($e->getMessage());
-    die;
-}
+// } catch (\Doctrine\ORM\OptimisticLockException|\Doctrine\ORM\ORMException $e) {
+//     var_dump($e->getMessage());
+//     die;
+// }
 
 
 //$count = $entityManager->getRepository(TitleEntity::class)->count([]);

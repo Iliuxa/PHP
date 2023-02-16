@@ -6,7 +6,7 @@ use App\Service\CategoryServise;
 
 class CategoryController
 {
-    public CategoryServise $service;
+    private CategoryServise $service;
 
     public function __construct()
     {
@@ -17,7 +17,7 @@ class CategoryController
      * Получить все категории льгот
      * @return array
      */
-    function getCategory()
+    public function getCategory()
     {
         return $this->service->getCategory();
     }
